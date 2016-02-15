@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>dev.random</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'> 
+    <link href="http://justlearningdjango.com/theme/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="http://justlearningdjango.com/theme/css/grayscale.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="http://justlearningdjango.com/theme/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+     <!-- tipue search style sheet -->
+
+     <link rel="stylesheet" href="http://justlearningdjango.com/theme/tipuesearch.css">
+    
+     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+<form id="searchform" action="/search" onsubmit="return (this.elements['q'].value.length > 0)">
+    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+</form>
+    <input type="text" name="q" id="tipue_search_input" autocomplete="off" required>
+</form>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+		    <li>
+			<a class="page-scroll" href="/index.html">Home</a>
+		    </li>
+                    <li>
+                        <a class="page-scroll" href="/pages/about.html">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/blog_index.html">Blog</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="/pages/contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>            <h4 class="date">Feb 14, 2016</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html" rel="bookmark" title="Permanent Link to &quot;Setting up a pelican blog&quot;">Setting up a pelican blog</a>
+                </h2>
+
+                <p>So here is something. Why ever bother with a static webpage generator when you can easily setup a powerful web framework like Django or Wordpress or Drupal?</p>
+<p>All wonderful questions. I dont really know.</p>
+<p>One reason might be that security is in order. The thoguht that your exposure to the intnernet is static. There are no database hooks to take advanatage of, no php vulnerabilities, no dynamic rendering that you need to be concerned with. What ever is rendered is what ever is rendered and that is what you get.</p>
+<p>CSS and JS run on the client machine and as such can't be exploited on the server because there is nothing to exploit.</p>
+<p>Kind of cool.</p>
+<p>The other thing that is kind of cool with this whole pelican thing is how simple it is. You edit your file in an ediotor ( I use VIM because I've been using it for years and years and the key bindings are engraned at this point) and then you just save the file and the geneartor creates the output.</p>
+<p>Markdown isn't too difficult to use either. Although out of the box there are definately some things to tweak. For exmaple: Its pretty plain looking!</p>
+<p>So here are the basic steps to setup Pelican. </p>
+<ol>
+<li>Configure your environment</li>
+<li>Add a theme</li>
+<li>Create Some Content</li>
+</ol>
+<h2>Configure your environment</h2>
+<p>First we need to install the software - this could not be simplier. </p>
+<div class="highlight"><pre><span></span>$ pkg install  virtualenv
+
+<span class="c1"># now lets enable the virtualenv</span>
+<span class="c1"># i happened to name my virtualenv &quot;pelican&quot;</span>
+
+$ virtualenv pelican
+$ <span class="nb">cd</span> pelican/
+$ . bin/activate
+$ pip install pelican markdown
+$ pelican-quickstart 
+</pre></div>
+
+
+<p>you will be asked a bunch of setup questions about your site. You can update these parameters in your pelicanconf.py file after the fact if you want to change something. </p>
+<p>Lets start the development server</p>
+<div class="highlight"><pre><span></span>$ ./develop_server.sh start
+</pre></div>
+
+
+<p>Now lets download a theme - this one works ok but you'll want to tweak it.</p>
+<div class="highlight"><pre><span></span>$ git clone https://github.com/DandyDev/pelican-bootstrap3.git
+</pre></div>
+
+
+<h2>Lets point pelican to our new theme</h2>
+<p>Now that we have Pelican installed and running and we've downloaded our theme files we need to tell Pelican where to find the theme.  This I find very elegant, there are many frameworks that make theme installation easy but I think this takes the cake. </p>
+<p>Open up the pelicanconf.py file and add the following:</p>
+<div class="highlight"><pre><span></span><span class="n">THEME</span> <span class="o">=</span> <span class="s1">&#39;pelican-bootstrap3&#39;</span>
+</pre></div>
+
+
+<h2>Create some content:</h2>
+<div class="highlight"><pre><span></span><span class="n">Title</span><span class="o">:</span> <span class="n">Setting</span> <span class="n">up</span> <span class="n">a</span> <span class="n">pelican</span> <span class="n">blog</span>
+<span class="n">Date</span><span class="o">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">12</span> <span class="mi">10</span><span class="o">:</span><span class="mi">20</span>
+<span class="n">Modified</span><span class="o">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">12</span> <span class="mi">10</span><span class="o">:</span><span class="mi">20</span>
+<span class="n">Category</span><span class="o">:</span> <span class="n">Blog</span>
+<span class="n">Tags</span><span class="o">:</span> <span class="n">pelican</span><span class="o">,</span> <span class="n">publishing</span><span class="o">,</span> <span class="n">blog</span>
+<span class="n">Slug</span><span class="o">:</span> <span class="n">setting</span><span class="o">-</span><span class="n">up</span><span class="o">-</span><span class="n">a</span><span class="o">-</span><span class="n">pelican</span><span class="o">-</span><span class="n">blog</span>
+<span class="n">Authors</span><span class="o">:</span> <span class="n">Craig</span> <span class="n">Riley</span>
+<span class="n">Summary</span><span class="o">:</span> <span class="n">Experimenting</span> <span class="k">with</span> <span class="n">Pelican</span>
+
+<span class="n">Create</span> <span class="n">your</span> <span class="n">content</span> <span class="n">using</span> <span class="n">the</span> <span class="n">editor</span> <span class="n">of</span> <span class="n">your</span> <span class="n">choice</span><span class="o">.</span> 
+
+<span class="o">&gt;</span> <span class="n">This</span> <span class="k">is</span> <span class="n">a</span> <span class="n">block</span> <span class="n">quote</span><span class="o">!</span>
+</pre></div>
+
+
+<p>That is pretty much it! You have a blog that you can write and add content to without too much trouble.  </p>
+<p>Once you get the hang of the whole markdown thing *which I am still working on ;-) * then you can make it look better. </p>
+<h1>Lets add some color to the theme!</h1>
+<p>So this i think is pretty cool.  You will edit the rendered css in the output direcotry and NOT the actual theme you downloaded using GIT. </p>
+<p>Why is that important? Well, out of the box we can modify the theme to be like we want it without having to change the actual code. If updates come about we can apply them without jacking everythign up. </p>
+<p>We can easily change the applied background color of the site by adding a background css tag to the style.css</p>
+<div class="highlight"><pre><span></span><span class="nt">body</span> <span class="p">{</span>
+    <span class="nb">padding-top</span><span class="o">:</span> <span class="m">70px</span><span class="p">;</span>
+    <span class="nb">background</span><span class="o">:</span><span class="m">#b3ecff</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.navbar</span> <span class="p">{</span>
+        <span class="nb">background</span><span class="o">:</span><span class="m">#f0f5f5</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<h1>And maybe some images???</h1>
+<p><img alt="This is the alternate text" src="/images/pelican.jpg" /> This would be a snazzy example of inserting an image inline with very little code. </p>
+<div class="highlight"><pre><span></span>![This is the alternate text](/images/pelican.jpg) This would be a snazzy example of inserting an image inline with very little code. 
+</pre></div>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html">posted at 00:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://justlearningdjango.com/category/blog.html" rel="tag">Blog</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://justlearningdjango.com/tag/pelican.html" class="tags">pelican</a>
+                    &nbsp;<a href="http://justlearningdjango.com/tag/publishing.html" class="tags">publishing</a>
+                    &nbsp;<a href="http://justlearningdjango.com/tag/blog.html" class="tags selected">blog</a>
+                </div>
+		<a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html#disqus_thread">Click to read and post comments</a>
+            </article>            <h4 class="date">Feb 12, 2016</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html" rel="bookmark" title="Permanent Link to &quot;Writing a Blog with a Static Web Page Generator&quot;">Writing a Blog with a Static Web Page Generator</a>
+                </h2>
+
+                <p>So here is something. Why ever bother with a static webpage generator when you can easily setup a powerful web framework like Django or Wordpress or Drupal?</p>
+<p>All wonderful questions. I dont really know. </p>
+<p>One reason might be that security is in order. The thoguht that your exposure to the intnernet is static. There are no database hooks to take advanatage of, no php vulnerabilities, no dynamic rendering that you need to be concerned with.  What ever is rendered is what ever is rendered and that is what you get. </p>
+<p>CSS and JS run on the client machine and as such can't be exploited on the server because there is nothing to exploit. </p>
+<p>Kind of cool. </p>
+<p>The other thing that is kind of cool with this whole pelican thing is how simple it is. You edit your file in an ediotor ( I use VIM because I've been using it for years and years and the key bindings are engraned at this point) and then you just save the file and the geneartor creates the output. </p>
+<p>Markdown isn't too difficult to use either. Although out of the box there are definately some things to tweak.  For exmaple: Its pretty plain looking! </p>
+<div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;Python syntax highlighting&quot;</span>
+<span class="k">print</span> <span class="n">s</span>
+</pre></div>
+
+
+<h1>And here is a heading</h1>
+<h1></h1>
+<h1></h1>
+<blockquote>
+<p>and this is a block quote. </p>
+</blockquote>
+<h1></h1>
+<p>Tables might work like this:</p>
+<table>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>One</em></td>
+<td><code>renders</code></td>
+<td><strong>nicely</strong></td>
+</tr>
+</tbody>
+</table>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html">posted at 10:20</a>
+                    &nbsp;&middot;&nbsp;<a href="http://justlearningdjango.com/category/blog.html" rel="tag">Blog</a>
+                    &nbsp;&middot;
+                    &nbsp;<a href="http://justlearningdjango.com/tag/pelican.html" class="tags">pelican</a>
+                    &nbsp;<a href="http://justlearningdjango.com/tag/publishing.html" class="tags">publishing</a>
+                    &nbsp;<a href="http://justlearningdjango.com/tag/blog.html" class="tags selected">blog</a>
+                </div>
+		<a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html#disqus_thread">Click to read and post comments</a>
+            </article>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; Craig Riley 2016</p>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+
+    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="http://justlearningdjango.com/theme/js/grayscale.js"></script>
+
+</body>
+
+</html>
