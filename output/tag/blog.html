@@ -1,91 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+        <meta charset="utf-8" />
+        <title>Blog About Nothin. - blog</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>dev.random</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'> 
-    <link href="http://justlearningdjango.com/theme/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="http://justlearningdjango.com/theme/css/grayscale.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="http://justlearningdjango.com/theme/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-
-     <!-- tipue search style sheet -->
-
-     <link rel="stylesheet" href="http://justlearningdjango.com/theme/tipuesearch.css">
-    
-     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-<form id="searchform" action="/search" onsubmit="return (this.elements['q'].value.length > 0)">
-    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
-</form>
-    <input type="text" name="q" id="tipue_search_input" autocomplete="off" required>
-</form>
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">
-                </a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-		    <li>
-			<a class="page-scroll" href="/index.html">Home</a>
-		    </li>
-                    <li>
-                        <a class="page-scroll" href="/pages/about.html">About</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="/blog_index.html">Blog</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="/pages/contact.html">Contact</a>
-                    </li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
                 </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>            <h4 class="date">Feb 14, 2016</h4>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
 
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html" rel="bookmark" title="Permanent Link to &quot;Setting up a pelican blog&quot;">Setting up a pelican blog</a>
-                </h2>
-
-                <p>So here is something. Why ever bother with a static webpage generator when you can easily setup a powerful web framework like Django or Wordpress or Drupal?</p>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html">Setting up a pelican blog</a></h1>
+<footer class="post-info">
+        <span>Tue 16 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/pelican.html">pelican</a><a href="http://justlearningdjango.com/tag/publishing.html">publishing</a><a href="http://justlearningdjango.com/tag/blog.html">blog</a></span>
+</footer><!-- /.post-info --><p>So here is something. Why ever bother with a static webpage generator when you can easily setup a powerful web framework like Django or Wordpress or Drupal?</p>
 <p>All wonderful questions. I dont really know.</p>
 <p>One reason might be that security is in order. The thoguht that your exposure to the intnernet is static. There are no database hooks to take advanatage of, no php vulnerabilities, no dynamic rendering that you need to be concerned with. What ever is rendered is what ever is rendered and that is what you get.</p>
 <p>CSS and JS run on the client machine and as such can't be exploited on the server because there is nothing to exploit.</p>
@@ -167,97 +116,52 @@ $ pelican-quickstart
 <h1>And maybe some images???</h1>
 <p><img alt="This is the alternate text" src="/images/pelican.jpg" /> This would be a snazzy example of inserting an image inline with very little code. </p>
 <div class="highlight"><pre><span></span>![This is the alternate text](/images/pelican.jpg) This would be a snazzy example of inserting an image inline with very little code. 
-</pre></div>
-                <div class="clear"></div>
+</pre></div>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
 
-                <div class="info">
-                    <a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html">posted at 00:00</a>
-                    &nbsp;&middot;&nbsp;<a href="http://justlearningdjango.com/category/blog.html" rel="tag">Blog</a>
-                    &nbsp;&middot;
-                    &nbsp;<a href="http://justlearningdjango.com/tag/pelican.html" class="tags">pelican</a>
-                    &nbsp;<a href="http://justlearningdjango.com/tag/publishing.html" class="tags">publishing</a>
-                    &nbsp;<a href="http://justlearningdjango.com/tag/blog.html" class="tags selected">blog</a>
-                </div>
-		<a href="http://justlearningdjango.com/setting-up-a-pelican-blog.html#disqus_thread">Click to read and post comments</a>
-            </article>            <h4 class="date">Feb 12, 2016</h4>
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html" rel="bookmark"
+                           title="Permalink to Writing a Blog with a Static Web Page Generator">Writing a Blog with a Static Web Page Generator</a></h1>
+                </header>
 
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html" rel="bookmark" title="Permanent Link to &quot;Writing a Blog with a Static Web Page Generator&quot;">Writing a Blog with a Static Web Page Generator</a>
-                </h2>
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Fri 12 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/pelican.html">pelican</a><a href="http://justlearningdjango.com/tag/publishing.html">publishing</a><a href="http://justlearningdjango.com/tag/blog.html">blog</a></span>
+</footer><!-- /.post-info -->                <p>Trying out a static webpage generator</p>
+                <a class="readmore" href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
-                <p>So here is something. Why ever bother with a static webpage generator when you can easily setup a powerful web framework like Django or Wordpress or Drupal?</p>
-<p>All wonderful questions. I dont really know. </p>
-<p>One reason might be that security is in order. The thoguht that your exposure to the intnernet is static. There are no database hooks to take advanatage of, no php vulnerabilities, no dynamic rendering that you need to be concerned with.  What ever is rendered is what ever is rendered and that is what you get. </p>
-<p>CSS and JS run on the client machine and as such can't be exploited on the server because there is nothing to exploit. </p>
-<p>Kind of cool. </p>
-<p>The other thing that is kind of cool with this whole pelican thing is how simple it is. You edit your file in an ediotor ( I use VIM because I've been using it for years and years and the key bindings are engraned at this point) and then you just save the file and the geneartor creates the output. </p>
-<p>Markdown isn't too difficult to use either. Although out of the box there are definately some things to tweak.  For exmaple: Its pretty plain looking! </p>
-<div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;Python syntax highlighting&quot;</span>
-<span class="k">print</span> <span class="n">s</span>
-</pre></div>
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-
-<h1>And here is a heading</h1>
-<h1></h1>
-<h1></h1>
-<blockquote>
-<p>and this is a block quote. </p>
-</blockquote>
-<h1></h1>
-<p>Tables might work like this:</p>
-<table>
-<thead>
-<tr>
-<th>Column 1</th>
-<th>Column 2</th>
-<th>Column 3</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><em>One</em></td>
-<td><code>renders</code></td>
-<td><strong>nicely</strong></td>
-</tr>
-</tbody>
-</table>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html">posted at 10:20</a>
-                    &nbsp;&middot;&nbsp;<a href="http://justlearningdjango.com/category/blog.html" rel="tag">Blog</a>
-                    &nbsp;&middot;
-                    &nbsp;<a href="http://justlearningdjango.com/tag/pelican.html" class="tags">pelican</a>
-                    &nbsp;<a href="http://justlearningdjango.com/tag/publishing.html" class="tags">publishing</a>
-                    &nbsp;<a href="http://justlearningdjango.com/tag/blog.html" class="tags selected">blog</a>
-                </div>
-		<a href="http://justlearningdjango.com/writing-a-blog-with-a-static-web-page-generator.html#disqus_thread">Click to read and post comments</a>
-            </article>
-
-
-    <!-- Footer -->
-    <footer>
-        <div class="container text-center">
-            <p>Copyright &copy; Craig Riley 2016</p>
-        </div>
-    </footer>
-
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="js/jquery.easing.min.js"></script>
-
-    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="http://justlearningdjango.com/theme/js/grayscale.js"></script>
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
 
 </body>
-
 </html>

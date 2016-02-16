@@ -2,8 +2,10 @@
 """
 Tipue Search
 ============
+
 A Pelican plugin to serialize generated HTML to JSON
 that can be used by jQuery plugin - Tipue Search.
+
 Copyright (c) Talha Mansoor
 """
 
@@ -12,7 +14,6 @@ from __future__ import unicode_literals
 import os.path
 import json
 from bs4 import BeautifulSoup
-#from BeautifulSoup import *
 from codecs import open
 try:
     from urlparse import urljoin

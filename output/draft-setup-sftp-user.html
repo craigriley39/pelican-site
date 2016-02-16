@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Draft - Setup SFTP User</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li class="active"><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://justlearningdjango.com/draft-setup-sftp-user.html" rel="bookmark"
+           title="Permalink to Draft - Setup SFTP User">Draft - Setup SFTP User</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/python.html">python</a><a href="http://justlearningdjango.com/tag/ssh.html">ssh</a></span>
+</footer><!-- /.post-info -->      <h1>Setup new user - generate password</h1>
+<p>The company I worked at had an externally facing SFTP server I built with a chroot jail.</p>
+<p>I wrote this script to automate creating new user accounts as well as defining a default password ala a random generator. </p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span><span class="n">PIPE</span>
+
+<span class="k">print</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">Hello...this script will assist with configuring users on the sftp server</span>
+
+<span class="s2">We will need to gather some information first.</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">executeShellCommand</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+    <span class="n">stdOut</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">errOut</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span><span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">return_code</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+    <span class="n">stdOut</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>    
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+        <span class="n">errOut</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="n">return_code</span><span class="p">,</span><span class="n">stdOut</span><span class="p">,</span><span class="n">errOut</span>
+
+
+<span class="k">def</span> <span class="nf">passwordGenerator</span><span class="p">():</span>
+    <span class="n">pwLength</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">punctuation</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">,</span><span class="s1">&#39;@&#39;</span><span class="p">,</span><span class="s1">&#39;^&#39;</span><span class="p">,</span><span class="s1">&#39;*&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span><span class="p">,</span><span class="n">punctuation</span><span class="p">,</span><span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">):</span>
+        <span class="n">password</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">password</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+                 <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span>
+                 <span class="n">pwLength</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
+
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">password</span>
+
+<span class="k">def</span> <span class="nf">createUser</span><span class="p">(</span><span class="n">userName</span><span class="p">,</span><span class="n">tempUser</span><span class="p">,</span><span class="n">accountExpiresOn</span><span class="p">,</span><span class="n">sftpOnly</span><span class="p">,</span><span class="n">userPassword</span><span class="p">):</span>
+    <span class="n">createUserCmd</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;useradd -c &quot;Generated User - &#39;</span><span class="o">+</span><span class="n">userName</span><span class="o">+</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="n">userName</span><span class="p">])</span>
+    <span class="n">modifyUserDir</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;usermod -d /&#39;</span><span class="o">+</span><span class="n">userName</span><span class="p">,</span><span class="n">userName</span><span class="p">])</span>
+    <span class="n">createUserDir</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;mkdir /chroot/&#39;</span><span class="o">+</span><span class="n">userName</span><span class="p">,</span><span class="s1">&#39;;mkdir /chroot/&#39;</span><span class="o">+</span><span class="n">userName</span><span class="o">+</span><span class="s1">&#39;/incoming ; mkdir /chroot/&#39;</span><span class="o">+</span><span class="n">userName</span><span class="o">+</span><span class="s1">&#39;/outgoing&#39;</span><span class="p">])</span>
+    <span class="n">chownUserDir</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;chown -R &#39;</span><span class="p">,</span><span class="n">userName</span><span class="p">,</span><span class="s1">&#39;/chroot/&#39;</span><span class="o">+</span><span class="n">userName</span><span class="p">])</span>
+
+
+
+    <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">createUserCmd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Created user account&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Failed to create user account&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">modifyUserDir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Updated userdir to use chroot&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Failed to update user directory in /etc/passwd&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="k">print</span> <span class="s2">&quot;Creating userdir in chroot&quot;</span>
+    <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">createUserDir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Created user directory&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Failed to create user direcotry in /chroot&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s2">&quot;Modifying ownership of chroot homedir&quot;</span>
+    <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">chownUserDir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Modified ownership of chroot home directory&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Failed to chown the home directory&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">sftpOnly</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Adding user to sftponly group&quot;</span>
+        <span class="n">sftpGrpCmd</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;usermod -G sftponly&#39;</span><span class="p">,</span><span class="n">userName</span><span class="p">])</span>
+        <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">sftpGrpCmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;updated group membership for user to use sftponly&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;Failed to update group membership&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tempUser</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+
+        <span class="k">print</span> <span class="s2">&quot;Setting Expiration on account&quot;</span>
+        <span class="n">expireAcctCmd</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;usermod -e&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">accountExpiresOn</span><span class="p">),</span><span class="n">userName</span><span class="p">])</span>
+        <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">expireAcctCmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;Users account has been set to expire on&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">accountExpiresOn</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;Failed to update expiration date on the user account&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Setting account to never expire&quot;</span>
+
+
+
+    <span class="n">passwordSetCommand</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;echo &quot;&#39;</span><span class="o">+</span><span class="n">userPassword</span><span class="o">+</span><span class="s1">&#39;&quot;| passwd --stdin&#39;</span><span class="p">,</span><span class="n">userName</span><span class="p">])</span>
+
+    <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">passwordSetCommand</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Checked the strength of the password with cracklib-check&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;Failed to set user password&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="k">print</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    --------------------------------------</span>
+<span class="s2">    --------------------------------------</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;The account is setup.&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;You will want to send the information below to the user&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;-------------------------&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;ServerName: sftp.graebel.com&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;Username: &quot;</span><span class="p">,</span><span class="n">userName</span>
+    <span class="k">print</span> <span class="s2">&quot;Password: &quot;</span><span class="p">,</span><span class="n">userPassword</span>
+    <span class="k">print</span> <span class="s2">&quot;-------------------------&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">setPassword</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    for this to work we will need to use Popen to captre stdout and stderr to see what the actual result of cracklib-check was</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stdout</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">errout</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">genPW</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;Would you like to generate a password? [y|n]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;y|Y&#39;</span><span class="p">,</span><span class="n">genPW</span><span class="p">):</span>
+        <span class="n">userPassword</span> <span class="o">=</span> <span class="n">passwordGenerator</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">userPassword</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;Enter password for new user:&quot;</span><span class="p">)</span>
+        <span class="n">ckPWStrength</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;echo </span><span class="se">\&quot;</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">userPassword</span><span class="p">,</span><span class="s1">&#39;&quot;| cracklib-check&#39;</span><span class="p">])</span>
+
+        <span class="n">return_code</span><span class="p">,</span><span class="n">stdout</span><span class="p">,</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">executeShellCommand</span><span class="p">(</span><span class="n">ckPWStrength</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^&#39;</span><span class="o">+</span><span class="n">userPassword</span><span class="o">+</span><span class="s1">&#39;: OK&#39;</span><span class="p">,</span><span class="n">stdout</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s2">&quot;Your password seems to be complex enough&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s2">&quot;The password choosen does not meet the system requirements. YOU NEED TO CHOOSE ANOTHER PW or let us create one&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+                <span class="k">print</span> <span class="n">stdout</span>
+                <span class="n">setPassword</span><span class="p">()</span>
+
+
+    <span class="k">return</span> <span class="n">userPassword</span>
+
+<span class="k">def</span> <span class="nf">setupNewUser</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">geteuid</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;You need to run this script with root privileges&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">userName</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;What username should we use? [string 6-8 characters]: &quot;</span><span class="p">)</span>
+    <span class="n">tempUser</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;Is this a Temp User? [y|n]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;y|Y&#39;</span><span class="p">,</span><span class="n">tempUser</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s2">&quot;User account will be set to expire.&quot;</span>
+        <span class="n">tempUser</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">expireInDays</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;How many days until account expires? [enter a digit]: &quot;</span><span class="p">)</span>
+        <span class="n">expireInDays</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">expireInDays</span><span class="p">)</span>
+        <span class="n">accountExpiresOn</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">expireInDays</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">&quot;The account will expire on :&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">accountExpiresOn</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tempUser</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">expireInDays</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">accountExpiresOn</span> <span class="o">=</span> <span class="s1">&#39;NEVER&#39;</span>
+        <span class="k">print</span> <span class="s2">&quot;This account will NOT expire&quot;</span>
+
+    <span class="n">sftpOnly</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;Will this user be just sftp? [y|n]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;y|Y&#39;</span><span class="p">,</span><span class="n">sftpOnly</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s2">&quot;User will only be able to sftp to the server&quot;</span>
+        <span class="n">sftpOnly</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sftpOnly</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="n">userPassword</span> <span class="o">=</span> <span class="n">setPassword</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Please review the information below:</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s2">&quot;Username: &quot;</span><span class="p">,</span><span class="n">userName</span>
+    <span class="k">print</span> <span class="s2">&quot;Temp User? &quot;</span><span class="p">,</span><span class="n">tempUser</span>
+    <span class="k">print</span> <span class="s2">&quot;Account Expires on: &quot;</span><span class="p">,</span><span class="n">accountExpiresOn</span>
+    <span class="k">print</span> <span class="s2">&quot;SFTP Only? &quot;</span><span class="p">,</span><span class="n">sftpOnly</span>
+    <span class="k">print</span> <span class="s2">&quot;Password: &quot;</span><span class="p">,</span><span class="n">userPassword</span>
+    <span class="k">print</span> <span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="s2">    ------------------------------------</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s2">&quot;Continue? [y|n]&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;y|Y&#39;</span><span class="p">,</span><span class="n">answer</span><span class="p">):</span>
+
+        <span class="n">createUser</span><span class="p">(</span><span class="n">userName</span><span class="p">,</span><span class="n">tempUser</span><span class="p">,</span><span class="n">accountExpiresOn</span><span class="p">,</span><span class="n">sftpOnly</span><span class="p">,</span><span class="n">userPassword</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">setupNewUser</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Draft - File transfer stuff in Perl</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li class="active"><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://justlearningdjango.com/draft-file-transfer-stuff-in-perl.html" rel="bookmark"
+           title="Permalink to Draft - File transfer stuff in Perl">Draft - File transfer stuff in Perl</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Sat 13 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/perl.html">perl</a><a href="http://justlearningdjango.com/tag/file-transfer.html">file-transfer</a></span>
+</footer><!-- /.post-info -->      <p>I later moved this whole process to python so I dont even remember if this script worked but hey:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/perl -w</span>
+<span class="c1">#</span>
+
+<span class="k">use</span> <span class="nn">Getopt::</span><span class="n">Long</span><span class="p">;</span>
+
+
+<span class="n">FILE</span><span class="o">=</span><span class="sb">`ssh prdsftp01.graebel.com &quot;cd /home/ftp_amz/incoming ; ls *gpg&quot;</span>
+
+<span class="sb">if [ $FILE ]; then echo &quot;Found a file&quot;; else echo &quot;DID NOT FIND  AFILE&quot;; fi</span>
+
+<span class="sb">$ssh = &quot;/usr/bin/ssh&quot;;</span>
+
+<span class="sb">$scp = /usr/bin/scp&quot;;</span>
+
+<span class="sb">$ssh_key_file = undef; # might need to define this one day.</span>
+
+<span class="sb">$staging_dir = &quot;/var/tmp/staging&quot;;</span>
+
+<span class="sb">$samba_share = &quot;/home/xfer&quot;;</span>
+
+<span class="sb">GetOptions(</span>
+<span class="sb">    &quot;pull_files|p&quot; =&gt; \&amp;pull_remote_files,</span>
+<span class="sb">    &quot;push_files|s&quot; =&gt; \&amp;push_files,</span>
+<span class="sb">    &quot;remote_host|H=s&quot; =&gt; \$remote_host,</span>
+<span class="sb">    &quot;remote_user|u&quot; =&gt; \$remote_user,</span>
+<span class="sb">    &quot;remote_dir|d&quot; =&gt; \$remote_dir,</span>
+<span class="sb">    &quot;grabel_gpg_key|k&quot; =&gt; \$key_id,</span>
+<span class="sb">    &quot;help|h&quot; =&gt; \&amp;help);</span>
+
+<span class="sb">sub check_local_files</span>
+<span class="sb">{</span>
+<span class="sb">    @files = `</span><span class="n">ls</span> <span class="nv">$samba_share</span><span class="sr">/outgoing/</span><span class="sb">`;</span>
+<span class="sb">    if(@files)</span>
+<span class="sb">    {</span>
+<span class="sb">        foreach $</span>
+<span class="sb">sub check_remote_files</span>
+<span class="sb">{</span>
+<span class="sb">@files = `</span><span class="n">ssh</span> <span class="nv">$remote_host</span> <span class="s">&quot;ls $remote_dir/*.gpg&quot;</span><span class="sb">`;</span>
+
+<span class="sb">foreach $file(@files)</span>
+<span class="sb">{</span>
+<span class="sb">    scp $remote_host:$remote_dir/$file $staging_dir;</span>
+<span class="sb">    &amp;ck_file_integrity;</span>
+<span class="sb">}</span>
+
+<span class="sb">}</span>
+<span class="sb">sub ck_file_integrity</span>
+<span class="sb">{</span>
+<span class="sb">    ## make sure its really a gpg file.</span>
+<span class="sb">        $file = $_[0];</span>
+<span class="sb">        $file_type = `</span><span class="nv">$file_cmd</span> <span class="nv">$file</span><span class="sb">`;</span>
+
+<span class="sb">        if($file_type =~ /ASCII text/)</span>
+<span class="sb">        {</span>
+
+<span class="sb">        `</span><span class="nb">chmod</span> <span class="mi">600</span> <span class="nv">$file</span><span class="sb">`;</span>
+<span class="sb">        &amp;decrypt_file($file);       </span>
+<span class="sb">                                            }else</span>
+<span class="sb">        {</span>
+<span class="sb">        print &quot;File was not what we expected...logging error.&quot;</span>
+<span class="sb">                                            $error_level=&quot;warn&quot;</span>
+<span class="sb">        $error_msg = &quot;Something not right about the file..please take a look in staging.\n&quot;;</span>
+
+<span class="sb">        &amp;send_results($error_level,$error_msg);</span>
+
+<span class="sb">        }</span>
+
+<span class="sb">                                        }</span>
+
+<span class="sb">sub decrypt_file</span>
+<span class="sb">{</span>
+
+<span class="sb">$file = $_[0];</span>
+
+
+<span class="sb">if(! $key_id )</span>
+<span class="sb">{</span>
+<span class="sb">    print &quot;You need to specify a gpg keyfile to use for decryption.\n&quot;;</span>
+<span class="sb">    exit(1);</span>
+<span class="sb">}else</span>
+<span class="sb">{</span>
+<span class="sb">    if(`</span><span class="n">gpg</span> <span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">key</span> <span class="nv">$key_id</span> <span class="nv">$file</span> <span class="o">&gt;</span> <span class="n">newfilename</span><span class="sb">`</span>
+
+<span class="sb">    if(`</span><span class="n">mv</span> <span class="n">newfilename</span> <span class="nv">$samba_dir</span><span class="sb">`) </span>
+<span class="sb">    {</span>
+<span class="sb">    $error_level=&quot;success&quot;;</span>
+<span class="sb">    $error_msg = &quot;File decrypted and mvoed to share.\n&quot;;</span>
+<span class="sb">    &amp;send_results($error_level,$error_msg);</span>
+<span class="sb">    }else</span>
+<span class="sb">    {</span>
+<span class="sb">    $error_level=&quot;error&quot;;</span>
+<span class="sb">    $error_msg = &quot;Failed to decrypt file\n&quot;;</span>
+<span class="sb">    &amp;send_results($error_level,$error_msg);</span>
+<span class="sb">    }</span>
+
+<span class="sb">}</span>
+<span class="sb">}</span>
+<span class="sb">sub send_results</span>
+<span class="sb">{</span>
+
+<span class="sb"># buld smtp goodness.</span>
+
+<span class="sb">    open(MAIL,&quot;|/usr/bin/mailx&quot;) || die &quot;Could not open mail\n&quot;;</span>
+<span class="sb">    print MAIL &quot;To: criley\@graebel.com\n&quot;;</span>
+<span class="sb">    print MAIL &quot;subject: Transfer report\n&quot;;</span>
+<span class="sb">    print MAIL &quot;$error_level \t $error_msg\n&quot;;</span>
+<span class="sb">    print MAIL &quot;\n&quot;;</span>
+<span class="sb">    close(MAIL);</span>
+<span class="sb">    print MAIL &quot;To:</span>
+<span class="sb">    $mail = `</span><span class="n">mailx</span> <span class="o">-</span><span class="n">s</span> <span class="s">&quot;File Transfer&quot;</span> <span class="n">criley</span><span class="o">\</span><span class="nv">@graebel</span><span class="o">.</span><span class="n">com</span>
+
+<span class="p">}</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

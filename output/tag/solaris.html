@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Blog About Nothin. - solaris</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://justlearningdjango.com/notes-finding-real-memory-usage-solaris.html">Notes - Finding Real Memory Usage - Solaris</a></h1>
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/solaris.html">solaris</a></span>
+</footer><!-- /.post-info --><h1>Finding the real memory in use</h1>
+<div class="highlight"><pre><span></span><span class="o">[</span>10:30:35 pststapp03<span class="o">]</span> ~ $ sudo mdb -k
+Loading modules: <span class="o">[</span> unix krtld genunix specfs dtrace ufs sd px ssd fcp fctl md qlc ip hook neti sctp arp usba lofs zfs random nfs crypto ipc ptm logindmux cpc fcip <span class="o">]</span>
+&gt; ::memstat
+
+Page Summary                Pages                MB  %Tot
+------------     ----------------  ----------------  ----
+Kernel                     <span class="m">133624</span>              <span class="m">1043</span>    3%     &lt;------OS and others <span class="o">(</span>vxfs cache<span class="o">)</span>
+Anon                        <span class="m">57146</span>               <span class="m">446</span>    1%
+Exec and libs               <span class="m">22366</span>               <span class="m">174</span>    1%
+Page cache                 <span class="m">359381</span>              <span class="m">2807</span>    9%     &lt;------UFS cache stuff
+Free <span class="o">(</span>cachelist<span class="o">)</span>           <span class="m">733145</span>              <span class="m">5727</span>   18%
+Free <span class="o">(</span>freelist<span class="o">)</span>           <span class="m">2865356</span>             <span class="m">22385</span>   69%
+
+Total                     <span class="m">4171018</span>             32586
+Physical                  <span class="m">4104612</span>             32067
+
+
+<span class="o">[</span>10:29:01 pststapp03<span class="o">]</span> ~ $ vmstat 1
+ kthr      memory            page            disk          faults      cpu
+ r b w   swap  free  re  mf pi po fr de sr m1 m1 m1 m2   in   sy   cs us sy id
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41581664</span> <span class="m">31079760</span> <span class="m">242</span> <span class="m">191</span> <span class="m">13</span> <span class="m">6</span> <span class="m">4</span> <span class="m">0</span> <span class="m">1</span> <span class="m">2</span>  <span class="m">2</span>  <span class="m">2</span>  <span class="m">2</span>  <span class="m">793</span> <span class="m">3212</span>  <span class="m">892</span>  <span class="m">1</span>  <span class="m">0</span> 99
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41385720</span> <span class="m">28277640</span> <span class="m">11</span> <span class="m">19</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">545</span>  <span class="m">652</span>  <span class="m">551</span>  <span class="m">0</span>  <span class="m">0</span> 100
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41385528</span> <span class="m">28277536</span> <span class="m">0</span> <span class="m">1</span> <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">535</span>  <span class="m">512</span>  <span class="m">521</span>  <span class="m">0</span>  <span class="m">0</span> 99
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41385528</span> <span class="m">28277536</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">568</span>  <span class="m">491</span>  <span class="m">578</span>  <span class="m">0</span>  <span class="m">1</span> 99
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41385528</span> <span class="m">28277536</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">531</span>  <span class="m">552</span>  <span class="m">553</span>  <span class="m">0</span>  <span class="m">1</span> 99
+ <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">41385528</span> <span class="m">28277536</span> <span class="m">0</span> <span class="m">1</span> <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">0</span>  <span class="m">6</span>  <span class="m">599</span> <span class="m">1660</span>  <span class="m">601</span>  <span class="m">0</span>  <span class="m">1</span> 99
+
+
+<span class="o">[</span>10:37:23 pststapp03<span class="o">]</span> ~ $ <span class="nb">echo</span> <span class="s1">&#39;scale=2; 28277072/1024/1024&#39;</span> <span class="p">|</span>bc
+26.96
+</pre></div>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://justlearningdjango.com/notes-solaris-zones.html" rel="bookmark"
+                           title="Permalink to Notes - Solaris Zones">Notes - Solaris Zones</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/zones.html">zones</a><a href="http://justlearningdjango.com/tag/solaris.html">solaris</a></span>
+</footer><!-- /.post-info -->                <p>Notes for creating and managing solaris Zones</p>
+                <a class="readmore" href="http://justlearningdjango.com/notes-solaris-zones.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://justlearningdjango.com/notes-zfs-commands.html" rel="bookmark"
+                           title="Permalink to Notes - ZFS Commands">Notes - ZFS Commands</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/zfs.html">zfs</a><a href="http://justlearningdjango.com/tag/solaris.html">solaris</a></span>
+</footer><!-- /.post-info -->                <p>Notes from Mike O with some additions from me :)</p>
+                <a class="readmore" href="http://justlearningdjango.com/notes-zfs-commands.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

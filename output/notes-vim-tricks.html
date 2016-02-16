@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Notes - VIM Tricks</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li class="active"><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://justlearningdjango.com/notes-vim-tricks.html" rel="bookmark"
+           title="Permalink to Notes - VIM Tricks">Notes - VIM Tricks</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/vim.html">vim</a></span>
+</footer><!-- /.post-info -->      <blockquote>
+<p>swiped from <a href="http://www.zinkwazi.com/unix/notes/tricks.vim.html">http://www.zinkwazi.com/unix/notes/tricks.vim.html</a></p>
+</blockquote>
+<p>Where grep came from (RE being Regular Expression):</p>
+<div class="highlight"><pre><span></span>:g/RE/p
+</pre></div>
+
+
+<p>Delete lines 10 to 20 inclusive:</p>
+<div class="highlight"><pre><span></span>:10,20d
+</pre></div>
+
+
+<p>or with marks a and b:</p>
+<div class="highlight"><pre><span></span>:<span class="s1">&#39;a,&#39;</span>bd
+</pre></div>
+
+
+<p>Delete lines that contain pattern:</p>
+<div class="highlight"><pre><span></span>:g/pattern/d
+</pre></div>
+
+
+<p>Delete all empty lines:</p>
+<div class="highlight"><pre><span></span>:g/^$/d
+</pre></div>
+
+
+<p>Delete lines in range that contain pattern:</p>
+<div class="highlight"><pre><span></span>:20,30/pattern/d
+</pre></div>
+
+
+<p>or with marks a and b:</p>
+<div class="highlight"><pre><span></span>:<span class="s1">&#39;a,&#39;</span>b/pattern/d
+</pre></div>
+
+
+<p>Substitute all lines for first occurance of pattern:</p>
+<div class="highlight"><pre><span></span>:%s/pattern/new/
+:1,$s/pattern/new/
+</pre></div>
+
+
+<p>Substitute all lines for pattern globally (more than once on the line):</p>
+<div class="highlight"><pre><span></span>:%s/pattern/new/g
+:1,$s/pattern/new/g
+</pre></div>
+
+
+<p>Find all lines containing pattern and then append -new to the end of each line:</p>
+<div class="highlight"><pre><span></span>:%s/<span class="se">\(</span>.*pattern.*<span class="se">\)</span>/<span class="se">\1</span>-new/g
+</pre></div>
+
+
+<p>Substitute range:</p>
+<div class="highlight"><pre><span></span>:20,30s/pattern/new/g
+</pre></div>
+
+
+<p>with marks a and b:</p>
+<div class="highlight"><pre><span></span>:<span class="s1">&#39;a,&#39;</span>bs/pattern/new/g
+</pre></div>
+
+
+<p>Swap two patterns on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\(</span>pattern1<span class="se">\)\(</span>pattern2<span class="se">\)</span>/<span class="se">\2\1</span>/
+</pre></div>
+
+
+<p>Capitalize the first lowercase character on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\(</span><span class="o">[</span>a-z<span class="o">]</span><span class="se">\)</span>/<span class="se">\u\1</span>/
+</pre></div>
+
+
+<p>more concisely:</p>
+<div class="highlight"><pre><span></span>:s/<span class="o">[</span>a-z<span class="o">]</span>/<span class="se">\u</span><span class="p">&amp;</span>/
+</pre></div>
+
+
+<p>Capitalize all lowercase characters on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\(</span><span class="o">[</span>a-z<span class="o">]</span><span class="se">\)</span>/<span class="se">\u\1</span>/g
+</pre></div>
+
+
+<p>more concisely:</p>
+<div class="highlight"><pre><span></span>:s/<span class="o">[</span>a-z<span class="o">]</span>/<span class="se">\u</span><span class="p">&amp;</span>/g
+</pre></div>
+
+
+<p>Capitalize all characters on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\(</span>.*<span class="se">\)</span>/<span class="se">\U\1\E</span>/
+</pre></div>
+
+
+<p>Capitalize the first character of all words on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\&lt;</span><span class="o">[</span>a-z<span class="o">]</span>/<span class="se">\u</span><span class="p">&amp;</span>/g
+</pre></div>
+
+
+<p>Uncapitalize the first character of all words on a line:</p>
+<div class="highlight"><pre><span></span>:s/<span class="se">\&lt;</span><span class="o">[</span>A-Z<span class="o">]</span>/<span class="se">\l</span><span class="p">&amp;</span>/g
+</pre></div>
+
+
+<p>Change case of character under cursor:</p>
+<div class="highlight"><pre><span></span>~
+</pre></div>
+
+
+<p>Change case of all characters on line:</p>
+<div class="highlight"><pre><span></span>g~~
+</pre></div>
+
+
+<p>Change case of remaining word from cursor:</p>
+<div class="highlight"><pre><span></span>g~w
+</pre></div>
+
+
+<p>Turn on line numbering:</p>
+<div class="highlight"><pre><span></span>:set nu
+</pre></div>
+
+
+<p>Turn it off:</p>
+<div class="highlight"><pre><span></span>:set nonu
+</pre></div>
+
+
+<p>Number lines (filter the file through a unix command and replace with output):</p>
+<div class="highlight"><pre><span></span>:%!cat -n
+</pre></div>
+
+
+<p>Sort lines:</p>
+<div class="highlight"><pre><span></span>:%!sort
+</pre></div>
+
+
+<p>Sort and uniq:</p>
+<div class="highlight"><pre><span></span>:%!sort -u
+</pre></div>
+
+
+<p>Read output of command into buffer:</p>
+<div class="highlight"><pre><span></span>:r !ls -l
+</pre></div>
+
+
+<p>Refresh file from version on disk:</p>
+<div class="highlight"><pre><span></span>:e!
+</pre></div>
+
+
+<p>Set textwidth for automatic line-wrapping as you type:</p>
+<div class="highlight"><pre><span></span>:set <span class="nv">textwidth</span><span class="o">=</span>80
+</pre></div>
+
+
+<p>Turn on syntax highlighting</p>
+<div class="highlight"><pre><span></span>:syn on
+</pre></div>
+
+
+<p>Turn it off:</p>
+<div class="highlight"><pre><span></span>:syn off
+</pre></div>
+
+
+<p>Force the filetype for syntax highlighting:</p>
+<div class="highlight"><pre><span></span>:set <span class="nv">filetype</span><span class="o">=</span>python
+:set <span class="nv">filetype</span><span class="o">=</span>c
+:set <span class="nv">filetype</span><span class="o">=</span>php
+</pre></div>
+
+
+<p>Use lighter coloring scheme for a dark background:</p>
+<div class="highlight"><pre><span></span>:set <span class="nv">background</span><span class="o">=</span>dark
+
+Htmlize a file using the current syntax highlighting:
+<span class="sb">```</span>bash
+:so $VIMRUNTIME/syntax/2html.vim
+</pre></div>
+
+
+<p>Or, htmlize from a command prompt:
+in 2html.sh put:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+vim -n -c <span class="s1">&#39;:so $VIMRUNTIME/syntax/2html.vim&#39;</span> -c <span class="s1">&#39;:wqa&#39;</span> <span class="nv">$1</span> &gt; /dev/null 2&gt; /dev/null
+</pre></div>
+
+
+<p>Now just run:  </p>
+<div class="highlight"><pre><span></span>shell&gt; 2html.sh foo.py
+</pre></div>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

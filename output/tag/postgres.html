@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Blog About Nothin. - postgres</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://justlearningdjango.com/draft-gather-system-data-and-load-into-a-database.html">Draft - Gather System Data and load into a database</a></h1>
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/python.html">python</a><a href="http://justlearningdjango.com/tag/postgres.html">postgres</a></span>
+</footer><!-- /.post-info --><h1>Gather system data and load into a database</h1>
+<p>This is a scirpt that I cant remember if it works at all to be honest :) </p>
+<p>I'm sure that parts of it work so that's cool. </p>
+<p>This script will run some basic stat gathering items on the server and load it into a database. Honestly it wasn't very useful but I ran this on my syslog server that was serioulsy getting pounded. The effort was abandoned as there were many ways to get what you need without all the effort. </p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">mysql.connector</span>
+
+<span class="k">def</span> <span class="nf">loadDB</span><span class="p">(</span><span class="n">boot</span><span class="p">,</span><span class="n">vm</span><span class="p">,</span><span class="n">cpu</span><span class="p">,</span><span class="n">du</span><span class="p">,</span><span class="n">eth0</span><span class="p">):</span>
+    <span class="n">dbuser</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>
+    <span class="n">dbpass</span> <span class="o">=</span> <span class="s2">&quot;daemon12&quot;</span>
+    <span class="n">dbname</span> <span class="o">=</span> <span class="s2">&quot;sysinfo&quot;</span>
+    <span class="n">entry_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>    
+    <span class="n">cnx</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">connector</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s1">&#39;load&#39;</span><span class="p">,</span><span class="n">password</span><span class="o">=</span><span class="s1">&#39;daemon12&#39;</span><span class="p">,</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span><span class="n">database</span><span class="o">=</span><span class="s1">&#39;sysinfo&#39;</span><span class="p">)</span>
+
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">cnx</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;insert into sys &quot;</span>
+    <span class="s2">&quot;(entry_date,uptime,mem_usage,cpu_usage,disk_usage,net_packets_in_drop,net_packets_out_drop)&quot;</span>
+    <span class="s2">&quot;VALUES (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="n">data_stats</span> <span class="o">=</span> <span class="p">(</span><span class="n">entry_date</span><span class="p">,</span><span class="n">boot</span><span class="p">,</span><span class="n">vm</span><span class="p">,</span><span class="n">cpu</span><span class="p">,</span><span class="n">du</span><span class="p">,</span><span class="n">eth0</span><span class="o">.</span><span class="n">dropin</span><span class="p">,</span><span class="n">eth0</span><span class="o">.</span><span class="n">dropout</span><span class="p">)</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">data_stats</span><span class="p">)</span>
+    <span class="n">cnx</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="n">entry_number</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">cnx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">network_io</span><span class="p">():</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">net_io_counters</span><span class="p">(</span><span class="n">pernic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">eth0</span> <span class="o">=</span> <span class="n">nt</span><span class="p">[</span><span class="s1">&#39;eth0&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">eth0</span>
+
+<span class="k">def</span> <span class="nf">bootTime</span><span class="p">():</span>
+
+    <span class="n">bt</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">boot_time</span><span class="p">()</span>
+    <span class="n">bTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">boot_time</span><span class="p">())</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bTime</span>
+
+<span class="k">def</span> <span class="nf">virtMemory</span><span class="p">():</span>
+    <span class="n">mem</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span>
+    <span class="n">mp</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">percent</span>
+    <span class="k">return</span> <span class="n">mp</span>
+
+<span class="k">def</span> <span class="nf">cpuPercent</span><span class="p">():</span>
+    <span class="n">cpuPercent</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">percpu</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cpuPercent</span>
+
+<span class="k">def</span> <span class="nf">diskUsage</span><span class="p">():</span>
+
+    <span class="n">freeSpace</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">freeSpace</span><span class="o">.</span><span class="n">percent</span>
+    <span class="k">return</span> <span class="n">fs</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">boot</span> <span class="o">=</span> <span class="n">bootTime</span><span class="p">()</span>
+    <span class="n">vm</span> <span class="o">=</span>   <span class="n">virtMemory</span><span class="p">()</span>
+    <span class="n">cpu</span> <span class="o">=</span> <span class="n">cpuPercent</span><span class="p">()</span>  
+    <span class="n">du</span> <span class="o">=</span> <span class="n">diskUsage</span><span class="p">()</span>    
+    <span class="n">eth0</span> <span class="o">=</span> <span class="n">network_io</span><span class="p">()</span> 
+    <span class="n">loadDB</span><span class="p">(</span><span class="n">boot</span><span class="p">,</span><span class="n">vm</span><span class="p">,</span><span class="n">cpu</span><span class="p">,</span><span class="n">du</span><span class="p">,</span><span class="n">eth0</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+   <span class="n">main</span><span class="p">()</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

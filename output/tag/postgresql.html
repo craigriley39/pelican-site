@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Blog About Nothin. - postgresql</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://justlearningdjango.com/draft-loading-syslog-logfile-into-postgress.html">Draft - Loading syslog logfile into Postgress</a></h1>
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/python.html">python</a><a href="http://justlearningdjango.com/tag/postgresql.html">postgresql</a></span>
+</footer><!-- /.post-info --><h1>Parsing log file and loading split data into a Postgress SQL database</h1>
+<p>This script also uses md5 to compare strings in the database with the strings in the file being parsed to ensure we arent loading duplicates. </p>
+<p>Script basically does:</p>
+<ol>
+<li>Opens messages file for reading (this is mmeant ot go against a syslog server</li>
+<li>Splits lines into segments</li>
+<li>Performs an md5 hash of the line being loaded.</li>
+<li>The Database being loaded sets the hash as a primary key. This way you can quickly attempt an insert and if the hash already exists it will fail and continue.</li>
+<li>uploads the unique line to the database. </li>
+</ol>
+<p>The database structure:</p>
+<div class="highlight"><pre><span></span><span class="nv">logfiles</span><span class="o">=</span><span class="c1"># select * from syslogs where false;</span>
+ entry_date <span class="p">|</span> entry_time <span class="p">|</span> source_addr <span class="p">|</span> message <span class="p">|</span> <span class="nb">hash</span> 
+</pre></div>
+
+
+<p>------------+------------+-------------+---------+------
+(0 rows)</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">md5</span>
+<span class="kn">from</span> <span class="nn">sh</span> <span class="kn">import</span> <span class="n">tail</span>
+<span class="k">def</span> <span class="nf">help</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s2">&quot;Help to be written later.....&quot;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">pumpData</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">time</span><span class="p">,</span><span class="n">source</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">lineHash</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This function can assume that we are just plowing thru data...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">con</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="s1">&#39;logfiles&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;insert into syslogs (entry_date,entry_time,source_addr,message,hash) values (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">)&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">time</span><span class="p">,</span><span class="n">source</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">lineHash</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">data</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">DatabaseError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s1">&#39;Error </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">e</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">con</span><span class="p">:</span>
+            <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">tailFile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tail</span><span class="p">(</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span><span class="n">logfile</span><span class="p">,</span><span class="n">_iter</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">parseLine</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">readFile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">logfile</span><span class="p">:</span>
+                <span class="n">loglines</span> <span class="o">=</span> <span class="n">logfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">loglines</span><span class="p">:</span>
+                        <span class="n">parseLine</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">parseLine</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+
+    <span class="n">lineHash</span> <span class="o">=</span> <span class="n">md5</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; 2013&#39;</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">pumpData</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">time</span><span class="p">,</span><span class="n">source</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">lineHash</span><span class="p">)</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">logfile</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;tail&quot;</span><span class="p">):</span>
+        <span class="n">tailFile</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+    <span class="k">elif</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
+        <span class="n">readFile</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s2">&quot;What mode do you want to use this in.....?&quot;</span>
+        <span class="n">help</span><span class="p">()</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

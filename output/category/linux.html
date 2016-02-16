@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Blog About Nothin. - Linux</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li class="active"><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
+                </ul>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://justlearningdjango.com/notes-selinux.html">Notes - SELinux</a></h1>
+<footer class="post-info">
+        <span>Mon 15 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/selinux.html">selinux</a></span>
+</footer><!-- /.post-info --><h1>Notes on SELinux</h1>
+<div class="highlight"><pre><span></span><span class="c1">## Very cool way to find out how to write policy:</span>
+<span class="c1">##</span>
+<span class="c1">##  To create a policy using messages from avc:</span>
+
+Use audit2allow, which transforms audit messages from alerts to loadable modules
+
+So, this /var/log/messages alert:
+Aug  <span class="m">7</span> 07:22:19 rastamon1 setroubleshoot:      SELinux is preventing /usr/libexec/postfix/local <span class="o">(</span>postfix_local_t<span class="o">)</span> <span class="s2">&quot;write&quot;</span> to cricket <span class="o">(</span>mail_spool_t<span class="o">)</span>.      For <span class="nb">complete</span> SELinux messages. run sealert -l 1afcc5f6-d4a8-47e6-b546-b2ec3b427f18
+
+Shows this in sealert:
+<span class="o">[</span>07:25:12 rastamon1<span class="o">]</span> tmp $ sealert -l 1afcc5f6-d4a8-47e6-b546-b2ec3b427f18
+Summary
+    SELinux is preventing /usr/libexec/postfix/local <span class="o">(</span>postfix_local_t<span class="o">)</span> <span class="s2">&quot;write&quot;</span>
+    to cricket <span class="o">(</span>mail_spool_t<span class="o">)</span>.
+
+Detailed Description
+    SELinux denied access requested by /usr/libexec/postfix/local. It is not
+    expected that this access is required by /usr/libexec/postfix/local and this
+    access may signal an intrusion attempt. It is also possible that the
+    specific version or configuration of the application is causing it to
+    require additional access.
+
+Allowing Access
+    Sometimes labeling problems can cause SELinux denials.  You could try to
+    restore the default system file context <span class="k">for</span> cricket, restorecon -v cricket
+    If this does not work, there is currently no automatic way to allow this
+    access. Instead,  you can generate a <span class="nb">local</span> policy module to allow this
+    access - see http://fedora.redhat.com/docs/selinux-faq-fc5/#id2961385 Or you
+    can disable SELinux protection altogether. Disabling SELinux protection is
+    not recommended. Please file a
+    http://bugzilla.redhat.com/bugzilla/enter_bug.cgi against this package.
+
+Additional Information        
+
+Source Context                user_u:system_r:postfix_local_t
+Target Context                system_u:object_r:mail_spool_t
+Target Objects                cricket <span class="o">[</span> file <span class="o">]</span>
+Affected RPM Packages         postfix-2.3.3-2 <span class="o">[</span>application<span class="o">]</span>
+Policy RPM                    selinux-policy-2.4.6-30.el5
+Selinux Enabled               True
+Policy Type                   targeted
+MLS Enabled                   True
+Enforcing Mode                Enforcing
+Plugin Name                   plugins.catchall_file
+Host Name                     rastamon1
+Platform                      Linux rastamon1 2.6.18-8.1.6.el5 <span class="c1">#1 SMP Fri Jun 1</span>
+                              18:52:13 EDT <span class="m">2007</span> x86_64 x86_64
+Alert Count                   7676
+Line Numbers                  
+
+Raw Audit Messages            
+
+avc: denied <span class="o">{</span> write <span class="o">}</span> <span class="k">for</span> <span class="nv">comm</span><span class="o">=</span><span class="s2">&quot;local&quot;</span> <span class="nv">dev</span><span class="o">=</span>dm-1 <span class="nv">egid</span><span class="o">=</span><span class="m">650</span> <span class="nv">euid</span><span class="o">=</span>650
+<span class="nv">exe</span><span class="o">=</span><span class="s2">&quot;/usr/libexec/postfix/local&quot;</span> <span class="nv">exit</span><span class="o">=</span>-13 <span class="nv">fsgid</span><span class="o">=</span><span class="m">650</span> <span class="nv">fsuid</span><span class="o">=</span><span class="m">650</span> <span class="nv">gid</span><span class="o">=</span><span class="m">0</span> <span class="nv">items</span><span class="o">=</span>0
+<span class="nv">name</span><span class="o">=</span><span class="s2">&quot;cricket&quot;</span> <span class="nv">pid</span><span class="o">=</span><span class="m">25939</span> <span class="nv">scontext</span><span class="o">=</span>user_u:system_r:postfix_local_t:s0 <span class="nv">sgid</span><span class="o">=</span>0
+<span class="nv">subj</span><span class="o">=</span>user_u:system_r:postfix_local_t:s0 <span class="nv">suid</span><span class="o">=</span><span class="m">0</span> <span class="nv">tclass</span><span class="o">=</span>file
+<span class="nv">tcontext</span><span class="o">=</span>system_u:object_r:mail_spool_t:s0 <span class="nv">tty</span><span class="o">=(</span>none<span class="o">)</span> <span class="nv">uid</span><span class="o">=</span>0
+
+<span class="c1"># Basically, postfix can&#39;t write to /var/spool/mail/cricket</span>
+<span class="o">[</span>07:26:30 rastamon1<span class="o">]</span> tmp $ ls -alZ /var/spool/mail/
+drwxrwxr-x  root     mail system_u:object_r:mail_spool_t   .
+drwxr-xr-x  root     root system_u:object_r:var_spool_t    ..
+-rw-------  cricket  mail system_u:object_r:mail_spool_t   cricket
+-rw-------  maorstea mail system_u:object_r:mail_spool_t   maorstea
+-rw-------  rfitch   mail system_u:object_r:mail_spool_t   rfitch
+-rw-------  root     root system_u:object_r:mail_spool_t   root
+
+<span class="c1"># So run audit2allow, and generate a te file:</span>
+<span class="o">[</span>07:36:29 rastamon1<span class="o">]</span> tmp $ sudo audit2allow -a -m postfixlocal &gt; postfixlocal.te
+<span class="o">[</span>07:37:22 rastamon1<span class="o">]</span> tmp $ cat postfixlocal.te 
+module postfixlocal 1.0<span class="p">;</span>
+
+require <span class="o">{</span>
+        class file write<span class="p">;</span>
+        <span class="nb">type</span> mail_spool_t<span class="p">;</span> 
+        <span class="nb">type</span> postfix_local_t<span class="p">;</span> 
+        role system_r<span class="p">;</span> 
+<span class="o">}</span><span class="p">;</span>
+
+allow postfix_local_t mail_spool_t:file write<span class="p">;</span>
+
+<span class="c1"># And compile it:</span>
+<span class="o">[</span>07:37:25 rastamon1<span class="o">]</span> tmp $ sudo checkmodule -M -m -o postfixlocal.mod postfixlocal.te
+checkmodule:  loading policy configuration from postfixlocal.te
+checkmodule:  policy configuration loaded
+checkmodule:  writing binary representation <span class="o">(</span>version 6<span class="o">)</span> to postfixlocal.mod
+
+<span class="c1"># and create a policy package:</span>
+<span class="o">[</span>07:37:47 rastamon1<span class="o">]</span> tmp $ semodule_package -o postfixlocal.pp -m postfixlocal.mod
+
+<span class="c1"># Now we have the ingredients:</span>
+<span class="o">[</span>07:38:39 rastamon1<span class="o">]</span> tmp $ file postfixlo*
+postfixlocal.mod: data
+postfixlocal.pp:  data
+postfixlocal.te:  ASCII C++ program text
+
+<span class="c1"># Load the policy to the kernel</span>
+<span class="o">[</span>07:38:46 rastamon1<span class="o">]</span> tmp $ sudo semodule -i postfixlocal.pp
+cricket homedir /usr/local/monitoring or its parent directory conflicts with a
+defined context in /etc/selinux/targeted/contexts/files/file_contexts,
+/usr/sbin/genhomedircon will not create a new context. This usually indicates an incorrectly defined system account.  If it is a system account please make sure its login shell is /sbin/nologin.
+
+<span class="c1">## The above messages did not interfere with the load of the policy:</span>
+<span class="o">[</span>07:44:14 rastamon1<span class="o">]</span> / $ sudo semodule -l
+amavis  1.1.0
+ccs     1.0.0
+clamav  1.1.0
+dcc     1.1.0
+evolution       1.1.0
+iscsid  1.0.0
+mozilla 1.1.0
+mplayer 1.1.0
+nagios  1.1.0
+oddjob  1.0.1
+pcscd   1.0.0
+postfixlocal    1.0    &lt;------------   module <span class="nv">loaded</span>  <span class="o">=]</span>
+pyzor   1.1.0
+razor   1.1.0
+ricci   1.0.0
+smartmon        1.1.0
+
+<span class="c1">## Also, we can load the module to another server:</span>
+<span class="o">[</span>07:47:50 rastamon1<span class="o">]</span> tmp $ scp postfixlocal.pp rastamon2:/var/tmp
+maorstea@rastamon2<span class="s1">&#39;s password: </span>
+<span class="s1">postfixlocal.pp                                                        100% 1017     1.0KB/s   00:00  </span>
+
+<span class="s1">[07:48:37 rastamon2] tmp $ sudo semodule -i postfixlocal.pp </span>
+<span class="s1">Password:</span>
+<span class="s1">cricket homedir /usr/local/monitoring or its parent directory conflicts with a</span>
+<span class="s1">defined context in /etc/selinux/targeted/contexts/files/file_contexts,</span>
+<span class="s1">/usr/sbin/genhomedircon will not create a new context. This usually indicates an incorrectly defined system account.  If it is a system account please make sure its login shell is /sbin/nologin.</span>
+
+<span class="s1">[07:49:02 rastamon2] tmp $ sudo semodule -l |grep postfixlocal</span>
+<span class="s1">postfixlocal    1.0</span>
+
+
+
+<span class="s1">### From audit2allow man page:</span>
+<span class="s1">[Note]  Important</span>
+<span class="s1">In order to load this newly created policy package into the kernel, you are required to </span>
+<span class="s1">execute semodule -i local.pp </span>
+<span class="s1">Note that if you later install another module called local, it will replace this module. </span>
+<span class="s1">If you want to keep these rules around, then you either need to append future customizations </span>
+<span class="s1">to this local.te, or give future customizations a different name. </span>
+
+
+
+<span class="s1">###</span>
+<span class="s1">### Following installation of 5.1 patches (new security pol files)   Received the following messages from</span>
+<span class="s1">### various commands:</span>
+
+<span class="s1">[12:27:52 kroker] ~ $ ssh localhost</span>
+<span class="s1">/etc/selinux/targeted/contexts/files/file_contexts: Multiple same specifications for /usr/local/lost\+found/.*.</span>
+<span class="s1">/etc/selinux/targeted/contexts/files/file_contexts: Multiple same specifications for /usr/local/\.journal.</span>
+<span class="s1">/etc/selinux/targeted/contexts/files/file_contexts: Multiple same specifications for /usr/local/lost\+found.</span>
+
+
+<span class="s1">##  Now, the  file above: file_contexts had no dups, but there were duplicate entries between it and</span>
+<span class="s1">## the sister file file_contextx.homedirs</span>
+
+<span class="s1">### removed the following from the homedirs files:</span>
+<span class="s1">/usr/local/\.journal    &lt;&lt;none&gt;&gt;</span>
+<span class="s1">/usr/local/lost\+found  -d      system_u:object_r:lost_found_t:s0</span>
+<span class="s1">/usr/local/lost\+found/.*       &lt;&lt;none&gt;&gt;</span>
+
+<span class="s1">## that worked, no need to restart restorecond</span>
+
+<span class="s1">#### Now - separate issue:   ssh borken</span>
+<span class="s1">##</span>
+<span class="s1">here&#39;</span>s what was updated
+<span class="o">[</span>13:06:23 kroker<span class="o">]</span> log <span class="c1"># grep ssh /var/log/yum.log </span>
+Nov <span class="m">14</span> 09:45:03 Updated: openssh.x86_64 4.3p2-24.el5
+Nov <span class="m">14</span> 09:46:54 Updated: openssh-askpass.x86_64 4.3p2-24.el5
+Nov <span class="m">14</span> 09:46:54 Updated: openssh-clients.x86_64 4.3p2-24.el5
+Nov <span class="m">14</span> 09:46:54 Updated: openssh-server.x86_64 4.3p2-24.el5
+
+<span class="c1">##after checking a bunch of ssh files, from rpm -ql on the installed packages, removed all openssh </span>
+<span class="c1">## and then installed the earlier version, and then it worked.</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

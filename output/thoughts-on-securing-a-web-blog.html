@@ -1,124 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+        <meta charset="utf-8" />
+        <title>Thoughts on securing a web blog</title>
+        <link rel="stylesheet" href="http://justlearningdjango.com/theme/css/main.css" />
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>dev.random</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'> 
-    <link href="http://justlearningdjango.com/theme/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="http://justlearningdjango.com/theme/css/grayscale.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="http://justlearningdjango.com/theme/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-
-     <!-- tipue search style sheet -->
-
-     <link rel="stylesheet" href="http://justlearningdjango.com/theme/tipuesearch.css">
-    
-     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-
-    <!-- Navigation -->
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-<form id="searchform" action="/search" onsubmit="return (this.elements['q'].value.length > 0)">
-    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
-</form>
-    <input type="text" name="q" id="tipue_search_input" autocomplete="off" required>
-</form>
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">
-                </a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-		    <li>
-			<a class="page-scroll" href="/index.html">Home</a>
-		    </li>
-                    <li>
-                        <a class="page-scroll" href="/pages/about.html">About</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="/blog_index.html">Blog</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="/pages/contact.html">Contact</a>
-                    </li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://justlearningdjango.com/">Blog About Nothin. </a></h1>
+                <nav><ul>
+    
+                        <li><a href="http://justlearningdjango.com/pages/about.html">About</a></li>
+    
+                        <li><a href="http://justlearningdjango.com/">Welcome to My Site</a></li>
+                    <li class="active"><a href="http://justlearningdjango.com/category/blog.html">Blog</a></li>
+                    <li><a href="http://justlearningdjango.com/category/linux.html">Linux</a></li>
+                    <li><a href="http://justlearningdjango.com/category/unix.html">Unix</a></li>
                 </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>            <h4 class="date">Feb 14, 2016</h4>
+<form id="search" action="/search.html" onsubmit="return (this.elements['q'].value.length > 0)">
+		    <input id="searchbox" type="text" name="q" size="12" placeholder="Search">
+		</form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://justlearningdjango.com/thoughts-on-securing-a-web-blog.html" rel="bookmark"
+           title="Permalink to Thoughts on securing a web blog">Thoughts on securing a web blog</a></h1>
+    </header>
 
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://justlearningdjango.com/thoughts-on-securing-a-web-blog.html" rel="bookmark" title="Permanent Link to &quot;Thoughts on securing a web blog&quot;">Thoughts on securing a web blog</a>
-                </h2>
+    <div class="entry-content">
+<footer class="post-info">
+        <span>Sun 14 February 2016</span>
+<span>| tags: <a href="http://justlearningdjango.com/tag/pelican.html">pelican</a><a href="http://justlearningdjango.com/tag/security.html">security</a></span>
+</footer><!-- /.post-info -->      <h1>Securing a web blog</h1>
+<p>I figure that the more software you have running the more you have to worrry about.  To that end I decided I would take a slightly different approach with the whole blogging thing for that reason and a couple more. </p>
+<p>Here are some things that I considered:</p>
+<ol>
+<li>Who is going to read the thing?</li>
+<li>How do you like to write? and do you care about collaboration?</li>
+<li>What do you really need it to do?</li>
+</ol>
+<p>There are other questions but for me those three were the ones that stuck out.<br />
+1. Who is going to read the thing? - A. In all liklihood, me.  There are tons of things and notes and items that I have collected in one form or another that I keep coming back to. Maybe I work on a piece of technology and then dont revisit it for a really long time. All the tips and tricks and things and such that I've picked up leave my head and its good to ahve someplace that I can go to remember. </p>
+<ol>
+<li>
+<p>How do you like to write? and do you care about collaboration? A. For me, I like to write quick and simple notes in Vi. I have been using that editor for many, many years and its just something that I'm very familar with.  And no...I am not interested in collaboarting this is just for me. </p>
+</li>
+<li>
+<p>What do you really need it to do? A. Well, not much! I really dont need a blog to do much at all. Store pages, Orgnaize things into topics and themes and allow me to search throgh them fairly quickly. That's pretty much it. </p>
+</li>
+</ol>
+<p>The other thing that I worry about is security. I setup a default wordpress site once and was amazed at how many bogus comments I ended up getting. The longer I leeft the site up with the default config the more I would get. Hundreds of completely bogus comments. I have no idea why.  Now Wordpress does a fairly good job with security but running it in production elsewhere it was clear to see that the more functionality you have the more you have to exploit . Simplier is better if simple is all you need! </p>
+<p>So that's what's up with this project.  I figured I would go with a static blog and if I wnated to do something more elaborate in the future I could move this to github for future refernce.  </p>
+<p>So there you have it...a completely static web blog created using pelican. Simple Linux box, Nginx serving a static directory on a local file system and a site created using css/js and html5 templates.  Simple :-)</p>
+    </div><!-- /.entry-content -->
 
-                <h1>Securing a web blog ...</h1>
-                <div class="clear"></div>
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
-                <div class="info">
-                    <a href="http://justlearningdjango.com/thoughts-on-securing-a-web-blog.html">posted at 10:20</a>
-                    &nbsp;&middot;&nbsp;<a href="http://justlearningdjango.com/category/blog.html" rel="tag">Blog</a>
-                    &nbsp;&middot;
-                    &nbsp;<a href="http://justlearningdjango.com/tag/pelican.html" class="tags">pelican</a>
-                    &nbsp;<a href="http://justlearningdjango.com/tag/security.html" class="tags">security</a>
-                </div>
-            </article>
+                            <li><a href="https://github.com/craigriley39">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-    <!-- Footer -->
-    <footer>
-        <div class="container text-center">
-            <p>Copyright &copy; Craig Riley 2016</p>
-        </div>
-    </footer>
-
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="js/jquery.easing.min.js"></script>
-
-    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="http://justlearningdjango.com/theme/js/grayscale.js"></script>
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
 
 </body>
-
 </html>
